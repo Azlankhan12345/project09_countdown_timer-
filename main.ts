@@ -1,33 +1,28 @@
-class CountdownTimer {
-    private targetDate: Date;
-    private intervalId: number;
+#! /usr/bin/env node
+import { differenceInSeconds } from 'date-fns';
+import inquirer from "inquirer";
 
-    constructor(targetDate: Date) {
-        this.targetDate = targetDate;
-        this.intervalId = 0;
-    }
 
-    start() {
-        this.intervalId = setInterval(() => {
-            const currentDate = new Date().getTime();
-            const difference = this.targetDate.getTime() - currentDate;
-            
-            if (difference <= 0) {
-                clearInterval(this.intervalId);
-                console.log("Countdown finished!");
-                return;
-            }
+let one = await inquirer.prompt({
+    type: "number",
+    name: "user",
+    message: "Please enter the amount in second: "
+})
+let getNum = one.user
 
-            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-            console.log(`${days}d ${hours}h ${minutes}m ${seconds}s`);
-        }, 1000);
-    }
+function second(x: number){
+    const interTime = new Date().setSeconds(new Date().getSeconds() + x)
+    const checkTime = new Date(interTime)
+    setInterval(() => {
+        const currTime = new Date()
+        const timeDiff = differenceInSeconds(checkTime, currTime)
+        if(timeDiff <= 0) {
+            console.log("Timer expired!")
+            process.exit()
+        }
+        const min = Math.floor((timeDiff % (3600 * 24)) / 3600)
+        const sec = Math.floor(timeDiff % 60)
+        console.log(`${min}:${sec}`)
+    }, 1000);
 }
-
-const targetDate = new Date("2024-05-01T00:00:00");
-const timer = new CountdownTimer(targetDate);
-timer.start();
+second(getNum)
